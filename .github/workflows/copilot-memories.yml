@@ -49,7 +49,15 @@ jobs:
           }
           elseif (-not [string]::IsNullOrWhiteSpace($env:VAR_REPOS)) {
             Write-Host "Using repositories from VARS.COPILOT_MEMORY_REPOSITORIES"
-            $repoList = $env:VAR_REPOS -split ',' | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            # Support both newline-separated (preferred) and comma-separated formats
+            if ($env:VAR_REPOS -match '\n') {
+              # Newline-separated format (one repo per line)
+              $repoList = $env:VAR_REPOS -split '\r?\n' | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            }
+            else {
+              # Comma-separated format (backward compatibility)
+              $repoList = $env:VAR_REPOS -split ',' | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            }
           }
           else {
             Write-Host "No repositories configured. Using default: ${{ github.repository }}"

@@ -19,7 +19,18 @@ The workflow requires the following configuration:
 - `COPILOT_MEMORY_PAT`: A GitHub Personal Access Token with `repo` scope or fine-grained read access to the repositories you want to check. This token is used to call the GitHub Copilot API.
 
 **Variables (optional):**
-- `COPILOT_MEMORY_REPOSITORIES`: Comma-separated list of repositories to check in `owner/repo` format (e.g., `rajbos/actions-marketplace-checks,actions/checkout`). If not set, the workflow will check the current repository by default.
+- `COPILOT_MEMORY_REPOSITORIES`: List of repositories to check in `owner/repo` format. Supports both newline-separated (preferred) and comma-separated formats:
+  - **Newline-separated** (one repository per line):
+    ```
+    rajbos/actions-marketplace-checks
+    actions/checkout
+    devops-actions/load-runner-info
+    ```
+  - **Comma-separated** (backward compatibility):
+    ```
+    rajbos/actions-marketplace-checks,actions/checkout
+    ```
+  If not set, the workflow will check the current repository by default.
 - `COPILOT_MEMORY_TAGGED_USER`: GitHub username to mention in the issue when memories are found (e.g., `rajbos`). The `@` symbol is optional.
 
 #### Running the Workflow

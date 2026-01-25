@@ -5,6 +5,20 @@ if (-not (Get-Module -Name Pester)) {
 BeforeAll {
     # Import the copilot-memories script
     $script:scriptPath = "$PSScriptRoot/../.github/workflows/copilot-memories.ps1"
+    
+    # Helper function to parse repository list using the same logic as the workflow
+    function Parse-RepositoryList {
+        param([string]$repoString)
+        
+        if ($repoString -match '\n') {
+            # Newline-separated format
+            return $repoString -split '\r?\n' | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        }
+        else {
+            # Comma-separated format
+            return $repoString -split ',' | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        }
+    }
 }
 
 Describe "Copilot Memories Script Tests" {
@@ -37,6 +51,45 @@ Describe "Copilot Memories Script Tests" {
         It "Should reject whitespace-only repository string" {
             $whitespaceRepo = "   "
             [string]::IsNullOrWhiteSpace($whitespaceRepo) | Should -Be $true
+        }
+        
+        It "Should split newline-separated repository list correctly" {
+            $multilineRepos = "rajbos/actions-marketplace-checks`nactions/checkout`ndevops-actions/load-runner-info"
+            $repoList = Parse-RepositoryList -repoString $multilineRepos
+            $repoList.Count | Should -Be 3
+            $repoList[0] | Should -Be "rajbos/actions-marketplace-checks"
+            $repoList[1] | Should -Be "actions/checkout"
+            $repoList[2] | Should -Be "devops-actions/load-runner-info"
+        }
+        
+        It "Should split comma-separated repository list correctly" {
+            $commaRepos = "rajbos/actions-marketplace-checks,actions/checkout,devops-actions/load-runner-info"
+            $repoList = Parse-RepositoryList -repoString $commaRepos
+            $repoList.Count | Should -Be 3
+            $repoList[0] | Should -Be "rajbos/actions-marketplace-checks"
+            $repoList[1] | Should -Be "actions/checkout"
+            $repoList[2] | Should -Be "devops-actions/load-runner-info"
+        }
+        
+        It "Should handle newline-separated list with empty lines" {
+            $multilineWithEmpty = "rajbos/actions-marketplace-checks`n`nactions/checkout`n  `ndevops-actions/load-runner-info"
+            $repoList = Parse-RepositoryList -repoString $multilineWithEmpty
+            $repoList.Count | Should -Be 3
+            $repoList[0] | Should -Be "rajbos/actions-marketplace-checks"
+            $repoList[1] | Should -Be "actions/checkout"
+            $repoList[2] | Should -Be "devops-actions/load-runner-info"
+        }
+        
+        It "Should detect newline in multiline string" {
+            $multilineRepos = "rajbos/actions-marketplace-checks`nactions/checkout"
+            $hasNewline = $multilineRepos -match '\n'
+            $hasNewline | Should -Be $true
+        }
+        
+        It "Should not detect newline in comma-separated string" {
+            $commaRepos = "rajbos/actions-marketplace-checks,actions/checkout"
+            $hasNewline = $commaRepos -match '\n'
+            $hasNewline | Should -Be $false
         }
     }
 
