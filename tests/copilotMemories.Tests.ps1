@@ -1,4 +1,6 @@
-Import-Module Pester
+if (-not (Get-Module -Name Pester)) {
+    Import-Module Pester
+}
 
 BeforeAll {
     # Import the copilot-memories script

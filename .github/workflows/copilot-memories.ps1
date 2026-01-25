@@ -98,7 +98,7 @@ function Get-CopilotMemories {
         }
     }
     catch {
-        $statusCode = $_.Exception.Response.StatusCode.value__
+        $statusCode = if ($_.Exception.Response) { $_.Exception.Response.StatusCode.value__ } else { $null }
         $errorMessage = $_.Exception.Message
         
         Write-Host "  Failed to fetch memories for $owner/$repo - Status: $statusCode, Error: $errorMessage"
