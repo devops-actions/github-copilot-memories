@@ -28,6 +28,8 @@ jobs:
   fetch-memories:
     name: Fetch Copilot Memories
     runs-on: ubuntu-latest
+    env:
+      VAR_REPOS: ${{ vars.REPOS }} 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
