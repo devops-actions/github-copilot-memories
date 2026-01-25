@@ -1,0 +1,11 @@
+# Copilot memories output files
+copilot-memories-results.json
+repo-list.json
+issue-body.md
+
+# PowerShell Test Results
+TestResults/
+
+# Temporary files
+*.tmp
+*.log
