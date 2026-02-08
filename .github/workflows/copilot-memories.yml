@@ -1,6 +1,5 @@
 # Fetch Copilot Memories from Repositories
 # Checks configured repositories for GitHub Copilot memories and creates an issue if memories are found
-
 name: Fetch Copilot Memories
 
 on:
